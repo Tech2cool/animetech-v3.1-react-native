@@ -44,32 +44,26 @@ yarn start
 
 <div style="display: flex; flex-wrap:wrap; gap:15px; justify-content: center;">
    <div>
-      <p style="text-align:center;">SPLASH SCREEN</p>
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/splash-gif.gif" height="650" width="350" align="right">
    </div>
 
    <div>
-      <p style="text-align:center;">HOME SCREEN</p>
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/home-info.gif" height="650" width="350" align="right">
    </div>
    <br>
 
    <div>
-         <p style="text-align:center;">VIDEO SCREEN</p>
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/video-info.gif" height="650" width="350" align="right">
    </div>
    <div>
-      <p style="text-align:center;">SEARCH SCREEN</p>
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/search-info.gif" height="650" width="350" align="right">
    </div>
    <br>
 
    <div>
-      <p style="text-align:center;">MY LIST SCREEN</p>
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/mylist-info.gif" height="650" width="350" align="right">
    </div>
    <div>
-      <p style="text-align:center;">RANDOM ANIME SCREEN</p>
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/random-info.gif" height="650" width="350" align="right">
    </div>
 </div>
