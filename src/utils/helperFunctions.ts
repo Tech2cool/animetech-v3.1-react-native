@@ -39,7 +39,11 @@ export const convertMilliseconds = (ms: number) => {
     milliseconds,
   };
 };
-export function findIndexInPaginatedData(episodes = [], episodeId, pageSize) {
+export function findIndexInPaginatedData(
+  episodes: any[] = [],
+  episodeId: string,
+  pageSize: number,
+) {
   if (episodes?.length > 0) {
     const episodeIndex = episodes.findIndex(ep => ep?.id === episodeId);
     const page = Math.ceil((episodeIndex + 1) / pageSize);

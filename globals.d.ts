@@ -16,9 +16,11 @@ interface RootStackParamList extends ParamListBase {
   GeneralSetting: undefined;
   AutoplaySetting: undefined;
   QualitySetting: undefined;
-  AnimeInfo: {id: string};
+  AnimeInfo: {id: string; type?: number};
+  TrailerInfo: {id: string};
   Watch: {id: string; episodeId: string; episodeNum: number; provider: string};
   Upcoming: {type: string; routeName: string};
+  RequestedInfo: {anime: animeInfo};
 }
 
 interface animeInfo {
@@ -35,6 +37,7 @@ interface animeInfo {
   index: number;
   genres?: string[];
   description: string;
+  synopsis?: string;
   animeImg: string;
   episodeId: string;
   episodeNum: number;
@@ -102,6 +105,8 @@ interface pageType {
 }
 
 interface episodeQuery {
+  code: number;
+  message?: string;
   pages: pageType[];
   episodes: episodeInfo[];
   list: episodeInfo[][];

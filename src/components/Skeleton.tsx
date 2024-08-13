@@ -29,14 +29,16 @@ const Skeleton: React.FC<SkeletonSliderProps> = ({
           ? shimmerColors
           : [color.LighterGray, color.LighterGray, color.LighterGray]
       }
-      shimmerStyle={{
-        width: width,
-        height: height,
-        opacity: opacity,
-        borderRadius: borderRadius,
-        overflow: 'hidden',
-        ...style,
-      }}
+      shimmerStyle={[
+        {
+          width: width,
+          height: height,
+          opacity: opacity,
+          borderRadius: borderRadius,
+          overflow: 'hidden',
+        },
+        style,
+      ]}
     />
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import PlayBackRateSetting from './PlayBackRateSetting';
 import useVideo from '../../hooks/useVideo';
 import SettingCard from './SettingsCard';
@@ -98,4 +98,4 @@ const BSheetHolder: React.FC<BsheetProps> = ({
   );
 };
 
-export default BSheetHolder;
+export default memo(BSheetHolder);

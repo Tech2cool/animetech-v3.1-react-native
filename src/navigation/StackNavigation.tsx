@@ -17,9 +17,11 @@ import {useSetting} from '../context/SettingContext';
 import AutoplaySetting from '../screens/StackScreens/AutoplaySetting';
 import GeneralSetting from '../screens/StackScreens/GeneralSetting';
 import QualitySetting from '../screens/StackScreens/QualitySetting';
+import RequestedInfo from '../screens/StackScreens/anitaku/RequestedInfo';
+import TrailerInfo from '../screens/StackScreens/anitaku/TrailerInfo';
 const Stack = createStackNavigator<RootStackParamList>();
 const StackNavigation: React.FC = () => {
-  const {loading} = useHomeAnime();
+  const {isLoading} = useHomeAnime();
   const {setSetting} = useSetting();
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -37,7 +39,7 @@ const StackNavigation: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return <SplashScreen />;
   }
   return (
@@ -45,6 +47,8 @@ const StackNavigation: React.FC = () => {
       <Stack.Navigator screenOptions={screenOptions}>
         <Stack.Screen name="HomeStack" component={BottomNavigation} />
         <Stack.Screen name="AnimeInfo" component={AnimeInfo} />
+        <Stack.Screen name="RequestedInfo" component={RequestedInfo} />
+        <Stack.Screen name="TrailerInfo" component={TrailerInfo} />
         <Stack.Screen name="Watch" component={Watch} />
         <Stack.Screen
           name="RecentRelease"

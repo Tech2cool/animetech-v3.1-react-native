@@ -1,5 +1,5 @@
 import {Platform, StyleSheet, View} from 'react-native';
-import React from 'react';
+import React, {memo} from 'react';
 import Theme from '../../utils/Theme';
 import useVideo from '../../hooks/useVideo';
 import Slider from '@react-native-community/slider';
@@ -10,7 +10,6 @@ interface BSOnlyProps {
 
 const BottomSliderOnly: React.FC<BSOnlyProps> = ({onSeek}) => {
   const {videoState, controlState} = useVideo();
-
   return (
     <View
       style={
@@ -33,7 +32,7 @@ const BottomSliderOnly: React.FC<BSOnlyProps> = ({onSeek}) => {
   );
 };
 
-export default BottomSliderOnly;
+export default memo(BottomSliderOnly);
 
 const styles = StyleSheet.create({
   sliderWrapper: {

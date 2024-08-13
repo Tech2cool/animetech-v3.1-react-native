@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {memo} from 'react';
 import Theme from '../../utils/Theme';
 import FastImage from 'react-native-fast-image';
 import {stripHtmlTags} from '../../utils/helperFunctions';
@@ -27,6 +27,7 @@ const WatchChats: React.FC<WatchChatsProps> = ({
 
   const textMsg =
     list?.length > 0 ? list[0]?.message && stripHtmlTags(list[0]?.message) : '';
+  // console.log('watch chats rendered');
 
   return (
     <TouchableOpacity onPress={onClick} style={styles.container}>
@@ -60,7 +61,7 @@ const WatchChats: React.FC<WatchChatsProps> = ({
   );
 };
 
-export default WatchChats;
+export default memo(WatchChats);
 
 const styles = StyleSheet.create({
   container: {

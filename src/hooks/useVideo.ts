@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+// /* eslint-disable react-hooks/exhaustive-deps */
 import {
   OnBufferData,
   OnLoadData,
@@ -26,9 +26,11 @@ type resizeModeType = 'none' | 'contain' | 'cover' | 'stretch';
 //   episodeNum?: string;
 // }
 const useVideo = () => {
-  const VideoRef = useRef<VideoRef>(null);
+  const videoRef = useRef<VideoRef>(null);
   const updateTimerRef = useRef<any>(null);
   const initialTimerRef = useRef<any>(null);
+  const seekTimeoutRef = useRef<any>(null);
+  const progressCounterRef = useRef<number>(0);
 
   const {
     videoState,
@@ -40,78 +42,121 @@ const useVideo = () => {
   } = useVideoState();
   const {setting} = useSetting();
 
-  const resetVideoAndControlsState = () => {
+  const resetVideoAndControlsState = useCallback(() => {
     setVideoState(initialStateVideoState);
-    setControlState(initialStateControlState);
-  };
-  const onChangeDownloadSheet = (value: boolean) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {autoPlayNext, ...otherCotrolsOps} = initialStateControlState;
     setControlState(prev => ({
       ...prev,
-      showDownloadSheet: value,
+      otherCotrolsOps,
     }));
-  };
-  const onChangeResizeSetting = (value: boolean) => {
-    setControlState(prev => ({
-      ...prev,
-      showResizeSetting: value,
-    }));
-  };
-  const onChangeShowChats = (value: boolean) => {
-    setControlState(prev => ({
-      ...prev,
-      showChats: value,
-    }));
-  };
+  }, [setControlState, setVideoState]);
 
-  const onChangeResizeMode = (value: ResizeMode) => {
-    setVideoState(prev => ({
-      ...prev,
-      resizeMode: value,
-    }));
-  };
+  const onChangeDownloadSheet = useCallback(
+    (value: boolean) => {
+      setControlState(prev => ({
+        ...prev,
+        showDownloadSheet: value,
+      }));
+    },
+    [setControlState],
+  );
+  //onSeek
+  const onSeek = useCallback(
+    (value: number) => {
+      videoRef.current?.seek(value < 0 ? 0 : value);
+      setVideoState(prev => ({
+        ...prev,
+        currentTime: value < 0 ? 0 : value,
+        isSeeking: prev.isSeeking === true ? prev.isSeeking : true,
+      }));
+      clearTimeout(seekTimeoutRef?.current);
+      seekTimeoutRef.current = setTimeout(() => {
+        setVideoState(prev => ({
+          ...prev,
+          isSeeking: false,
+        }));
+      }, 500);
+    },
+    [setVideoState],
+  );
 
-  const toggleControls = () => {
+  const onChangeResizeSetting = useCallback(
+    (value: boolean) => {
+      setControlState(prev => ({
+        ...prev,
+        showResizeSetting: value,
+      }));
+    },
+    [setControlState],
+  );
+
+  const onChangeShowChats = useCallback(() => {
+    setControlState(prev => ({
+      ...prev,
+      showChats: !prev.showChats,
+    }));
+  }, [setControlState]);
+
+  const onChangeResizeMode = useCallback(
+    (value: ResizeMode) => {
+      setVideoState(prev => ({
+        ...prev,
+        resizeMode: value,
+      }));
+    },
+    [setVideoState],
+  );
+
+  const toggleControls = useCallback(() => {
     setControlState(prev => ({
       ...prev,
       showControl: !prev.showControl,
     }));
-  };
-  const toggleSetting = () => {
+  }, [setControlState]);
+
+  const toggleSetting = useCallback(() => {
     setControlState(prev => ({
       ...prev,
       showSetting: !prev.showSetting,
     }));
-  };
-  const toggleFullscreen = () => {
+  }, [setControlState]);
+
+  const toggleFullscreen = useCallback(() => {
     if (videoState.fullscreen) {
       setVideoState(prev => ({...prev, fullscreen: false}));
       Orientation.lockToPortrait();
       // SystemNavigationBar.stickyImmersive(false);
-      VideoRef.current?.dismissFullscreenPlayer();
+      videoRef.current?.dismissFullscreenPlayer();
     } else {
       setVideoState(prev => ({...prev, fullscreen: true}));
       Orientation.lockToLandscape();
       // SystemNavigationBar.stickyImmersive();
-      VideoRef.current?.presentFullscreenPlayer();
+      videoRef.current?.presentFullscreenPlayer();
     }
-  };
-  const onVideoParams = (
-    id: string,
-    episodeId: string,
-    episodeNum: number,
-    animeInfo: animeInfo,
-    provider: string,
-  ) => {
-    setVideoInfo(prev => ({
-      ...prev,
-      id,
-      episodeId,
-      episodeNum,
-      animeInfo,
-      provider,
-    }));
-  };
-  const updateRecordOnProgress = async () => {
+  }, [videoState.fullscreen, setVideoState]);
+
+  const onVideoParams = useCallback(
+    (
+      id: string,
+      episodeId: string,
+      episodeNum: number,
+      animeInfo: animeInfo,
+      provider: string,
+    ) => {
+      setVideoInfo(prev => ({
+        ...prev,
+        id,
+        episodeId,
+        episodeNum,
+        animeInfo,
+        provider,
+      }));
+    },
+    [setVideoInfo],
+  );
+
+  const updateRecordOnProgress = useCallback(async () => {
     if (!videoInfo.animeInfo?.animeId || !videoInfo.episodeId) return;
     // console.log(JSON.stringify(videoInfo, null, 2));
     try {
@@ -139,8 +184,19 @@ const useVideo = () => {
     } catch (err: any) {
       Toast.error(err?.message, 'top');
     }
-  };
+  }, [
+    videoInfo.episodeId,
+    videoInfo.id,
+    videoInfo.animeInfo,
+    videoState.currentTime,
+    videoState.duration,
+    videoInfo.episodeNum,
+    videoInfo.provider,
+  ]);
 
+  const onPlaybackStateChanged = useCallback(() => {
+    // console.log(e);
+  }, []);
   // VideoPlayer Events Start
   //onLoadStart
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -149,7 +205,7 @@ const useVideo = () => {
     // console.log('onLoadStart Called');
   }, []);
 
-  const onLoadCallback = async () => {
+  const onLoadCallback = useCallback(async () => {
     if (!videoInfo.episodeId) return;
     const resp = await getAsyncData(videoInfo.episodeId);
     if (!resp) return;
@@ -159,95 +215,135 @@ const useVideo = () => {
     //   ...prev,
     //   currentTime: JSON.parse(resp),
     // }));
-  };
+  }, [videoInfo.episodeId, onSeek]);
 
   //onLoad
-  const onLoad = useCallback((data: OnLoadData) => {
-    // console.log(JSON.stringify(data, null, 2));
-    // console.log('onLoad Called');
-    let findQuality = 'default';
-    if (setting.isWifi) {
-      findQuality =
-        data.videoTracks?.find(item => item.height === setting.wifiQuality) ||
-        'default';
-    } else {
-      findQuality =
-        data.videoTracks?.find(item => item.height === setting.mobileQuality) ||
-        'default';
-    }
-    // console.log(findQuality);
-    setVideoState(prev => ({
-      ...prev,
-      currentTime: data.currentTime,
-      duration: data.duration,
-      videoTracks: data.videoTracks,
-      selectedVideoTrack: {
-        ...prev.selectedVideoTrack,
-        type:
-          findQuality !== 'default'
+  const onLoad = useCallback(
+    (data: OnLoadData) => {
+      // console.log(JSON.stringify(data, null, 2));
+      // console.log('onLoad Called');
+      let findQuality;
+      if (setting.isWifi) {
+        findQuality = data.videoTracks?.find(
+          item => item.height === setting.wifiQuality,
+        );
+      } else {
+        findQuality = data.videoTracks?.find(
+          item => item.height === setting.mobileQuality,
+        );
+      }
+      // console.log(findQuality);
+      setVideoState(prev => ({
+        ...prev,
+        currentTime: data.currentTime,
+        duration: data.duration,
+        videoTracks: data.videoTracks,
+        selectedVideoTrack: {
+          ...prev.selectedVideoTrack,
+          type: findQuality
             ? SelectedVideoTrackType.RESOLUTION
             : SelectedVideoTrackType.AUTO,
-        value: findQuality !== 'default' ? findQuality?.height : 0,
-      },
-      quality: JSON.stringify(findQuality?.height) || 'default',
-    }));
-    setControlState(prev => ({
-      ...prev,
-      initialLoaded: true,
-    }));
-    clearTimeout(initialTimerRef?.current);
-    initialTimerRef.current = setTimeout(() => {
+          value: findQuality ? findQuality?.height : 0,
+        },
+        quality: JSON.stringify(findQuality?.height) || 'default',
+      }));
+
       setControlState(prev => ({
         ...prev,
-        initialLoaded: false,
+        initialLoaded: true,
       }));
-    }, 4000);
-    // onLoadCallback();
-  }, []);
+
+      clearTimeout(initialTimerRef?.current);
+      initialTimerRef.current = setTimeout(() => {
+        setControlState(prev => ({
+          ...prev,
+          initialLoaded: false,
+        }));
+      }, 4000);
+      // onLoadCallback();
+    },
+    [
+      setting.isWifi,
+      setting.mobileQuality,
+      setting.wifiQuality,
+      setControlState,
+      setVideoState,
+    ],
+  );
 
   //onBuffer
-  const onBuffer = useCallback((data: OnBufferData) => {
-    // console.log(JSON.stringify(data, null, 2));
-    setVideoState(prev => ({
-      ...prev,
-      isBuffering: data.isBuffering,
-    }));
-    // console.log('onLoadStart Called');
-  }, []);
-
-  //onSeek
-  const onSeek = useCallback((value: number) => {
-    VideoRef.current?.seek(value < 0 ? 0 : value);
-    setVideoState(prev => ({
-      ...prev,
-      currentTime: value < 0 ? 0 : value,
-    }));
-  }, []);
+  const onBuffer = useCallback(
+    (data: OnBufferData) => {
+      // console.log(JSON.stringify(data, null, 2));
+      setVideoState(prev => ({
+        ...prev,
+        isBuffering: data.isBuffering,
+      }));
+      // console.log('onLoadStart Called');
+    },
+    [setVideoState],
+  );
 
   //togglePlayPause
-  const onPressPlayPause = () => {
+  const onPressPlayPause = useCallback(() => {
     if (videoState.paused) {
-      VideoRef.current?.resume();
-      setVideoState({...videoState, paused: false});
+      videoRef.current?.resume();
+      setVideoState(prev => ({...prev, paused: false}));
     } else {
-      VideoRef.current?.pause();
-      setVideoState({...videoState, paused: true});
+      videoRef.current?.pause();
+      setVideoState(prev => ({...prev, paused: true}));
     }
-  };
+  }, [videoState.paused, setVideoState]);
+
+  const updateProgressCunter = useCallback(() => {
+    if (videoState.paused) {
+      progressCounterRef.current = 0;
+    } else {
+      if (
+        progressCounterRef.current > 3 &&
+        controlState.showControl &&
+        !videoState.isSeeking
+      ) {
+        toggleControls();
+        progressCounterRef.current = 0;
+      } else if (controlState.showControl && !videoState.isSeeking) {
+        progressCounterRef.current += 1;
+      }
+    }
+  }, [
+    videoState.paused,
+    controlState.showControl,
+    toggleControls,
+    videoState.isSeeking,
+  ]);
 
   //onProgress
-  const onProgress = useCallback((data: OnProgressData) => {
-    setVideoState(prev => ({
-      ...prev,
-      currentTime: data.currentTime,
-      playableDuration: data.playableDuration,
-      seekableDuration: data.seekableDuration,
-    }));
-    clearTimeout(updateTimerRef?.current);
-    updateTimerRef.current = setTimeout(() => {
-      updateRecordOnProgress();
-    }, 500);
-  }, []);
+  const onProgress = useCallback(
+    (data: OnProgressData) => {
+      setVideoState(prev => ({
+        ...prev,
+        currentTime: data.currentTime,
+        playableDuration: data.playableDuration,
+        seekableDuration: data.seekableDuration,
+      }));
+      updateProgressCunter();
+      clearTimeout(updateTimerRef?.current);
+      updateTimerRef.current = setTimeout(() => {
+        updateRecordOnProgress();
+      }, 500);
+    },
+    [updateRecordOnProgress, setVideoState, updateProgressCunter],
+  );
+  const onEnd = useCallback(
+    (handleNext: () => void) => {
+      //end
+      if (controlState.autoPlayNext) {
+        //b
+        handleNext();
+      }
+    },
+    [controlState.autoPlayNext],
+  );
   // VideoPlayer Events end
 
   const videoTimeFormat = useCallback((time: number) => {
@@ -272,38 +368,71 @@ const useVideo = () => {
     }
   }, []);
 
-  const qualitySettingOp = (ops: boolean = false) => {
-    setControlState(prev => ({...prev, showQualitySetting: ops}));
-  };
+  const qualitySettingOp = useCallback(
+    (ops: boolean = false) => {
+      setControlState(prev => ({...prev, showQualitySetting: ops}));
+    },
+    [setControlState],
+  );
 
-  const playbackRateSettingOp = (ops: boolean = false) => {
-    setControlState(prev => ({...prev, showPlayBackRateSetting: ops}));
-  };
-  const resizeModeSettingOp = (ops: boolean = false) => {
-    setControlState(prev => ({...prev, showResizeSetting: ops}));
-  };
-  const settingOp = (ops: boolean = false) => {
-    setControlState(prev => ({...prev, showSetting: ops}));
-  };
-  const setResizeVideo = (resize: resizeModeType) => {
-    setVideoState({...videoState, resizeMode: resize});
-  };
+  const playbackRateSettingOp = useCallback(
+    (ops: boolean = false) => {
+      setControlState(prev => ({...prev, showPlayBackRateSetting: ops}));
+    },
+    [setControlState],
+  );
 
-  const onChangeAutoPlay = (value: boolean) => {
+  const resizeModeSettingOp = useCallback(
+    (ops: boolean = false) => {
+      setControlState(prev => ({...prev, showResizeSetting: ops}));
+    },
+    [setControlState],
+  );
+
+  const settingOp = useCallback(
+    (ops: boolean = false) => {
+      setControlState(prev => ({...prev, showSetting: ops}));
+    },
+    [setControlState],
+  );
+
+  const setResizeVideo = useCallback(
+    (resize: resizeModeType) => {
+      setVideoState(prev => ({...prev, resizeMode: resize}));
+    },
+    [setVideoState],
+  );
+
+  const onChangeAutoPlay = useCallback(
+    (value: boolean) => {
+      setControlState(prev => ({
+        ...prev,
+        autoPlayNext: value,
+      }));
+      Toast.success(`AutoPlay ${value === true ? 'on' : 'off'}`, 'top');
+    },
+    [setControlState],
+  );
+
+  const toggleAutoPlay = useCallback(() => {
     setControlState(prev => ({
       ...prev,
-      autoPlayNext: value,
+      autoPlayNext: !prev.autoPlayNext,
     }));
-    Toast.success(`AutoPlay ${value ? 'on' : 'off'}`, 'top');
-  };
+    Toast.success(
+      `AutoPlay ${controlState.autoPlayNext ? 'on' : 'off'}`,
+      'top',
+    );
+  }, [controlState.autoPlayNext, setControlState]);
+
   useEffect(() => {
     if (!controlState.initialLoaded) return;
     if (videoState.duration <= 0) return;
     onLoadCallback();
-  }, [controlState.initialLoaded]);
+  }, [controlState.initialLoaded, onLoadCallback, videoState.duration]);
 
   return {
-    VideoRef,
+    videoRef,
     videoState,
     controlState,
     toggleControls,
@@ -330,6 +459,9 @@ const useVideo = () => {
     onChangeShowChats,
     onVideoParams,
     onChangeAutoPlay,
+    toggleAutoPlay,
+    onEnd,
+    onPlaybackStateChanged,
   };
 };
 

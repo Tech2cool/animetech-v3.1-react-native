@@ -9,6 +9,14 @@ export type AnimeInfoScreenProps = StackScreenProps<
   RootStackParamList,
   'AnimeInfo'
 >;
+export type RequestedScreenProps = StackScreenProps<
+  RootStackParamList,
+  'RequestedInfo'
+>;
+export type TrailerScreenProps = StackScreenProps<
+  RootStackParamList,
+  'TrailerInfo'
+>;
 
 export type WatchScreenProps = StackScreenProps<RootStackParamList, 'Watch'>;
 export type RecentReleaseScreenProps = StackScreenProps<

@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {memo} from 'react';
 import Skeleton from '../Skeleton';
 import Theme from '../../utils/Theme';
 const color = Theme.DARK;
@@ -23,6 +23,8 @@ const WatchPrevNextBtns: React.FC<VideoBtns> = ({
   onPressPrev,
   isLoading = false,
 }) => {
+  // console.log('watch prevNextBtn rendered');
+
   if (isLoading) {
     return (
       <View style={[styles.container, {gap: 5}]}>
@@ -69,7 +71,7 @@ const WatchPrevNextBtns: React.FC<VideoBtns> = ({
   );
 };
 
-export default WatchPrevNextBtns;
+export default memo(WatchPrevNextBtns);
 
 const styles = StyleSheet.create({
   container: {

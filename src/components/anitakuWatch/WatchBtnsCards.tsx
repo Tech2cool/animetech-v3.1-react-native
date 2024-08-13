@@ -2,15 +2,15 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {memo} from 'react';
+import React, {memo, useState} from 'react';
 import FastImage from 'react-native-fast-image';
 import {MCIcon} from '../../utils/constant';
 import Theme from '../../utils/Theme';
 import useVideo from '../../hooks/useVideo';
+import Skeleton from '../Skeleton';
 
 const color = Theme.DARK;
 const font = Theme.FONTS;
@@ -29,25 +29,60 @@ const WatchBtnsCards: React.FC<VideoBtns> = ({
   shareToFacebook,
   shareToWhatsApp,
   onPressShare,
-  isLoading = false,
+  isLoading,
 }) => {
   const {onChangeDownloadSheet, controlState} = useVideo();
+  const [liked, setLiked] = useState<string | undefined>(undefined);
+
+  const onTouchLike = (item: any) => {
+    if (item.text === liked) {
+      setLiked(undefined);
+    } else {
+      setLiked(item?.text);
+    }
+  };
+  if (isLoading) {
+    return (
+      <View style={{gap: 10}}>
+        <View style={[styles.container, {gap: 10}]}>
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+        </View>
+        <View style={[styles.container, {gap: 10}]}>
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+          <Skeleton width={60} height={35} borderRadius={10} opacity={1} />
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <>
+    <View>
       <ScrollView horizontal>
         <View style={styles.container}>
-          {list?.map((item, index) => (
+          {list?.map((item: reaction, index) => (
             <TouchableOpacity
-              onPress={() => {
-                ToastAndroid.show('Reactions coming soon!', ToastAndroid.SHORT);
-              }}
+              onPress={() => onTouchLike(item)}
               key={index}
-              style={styles.btnContainer}>
+              style={[
+                styles.btnContainer,
+                liked === item?.text ? styles.activeBtn : undefined,
+              ]}>
               <FastImage
                 source={{uri: `https:${item?.imageUrl}`}}
                 style={styles.imgPic}
               />
-              <Text style={styles.btnText}>{item?.votes}</Text>
+              <Text style={styles.btnText}>
+                {liked === item?.text ? item?.votes + 1 : item?.votes}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -89,7 +124,7 @@ const WatchBtnsCards: React.FC<VideoBtns> = ({
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </>
+    </View>
   );
 };
 
@@ -97,9 +132,11 @@ export default memo(WatchBtnsCards);
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'row',
     gap: 8,
     paddingVertical: 8,
+    paddingHorizontal: 5,
   },
   btnContainer: {
     flexDirection: 'row',
@@ -111,7 +148,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 15,
     gap: 5,
+    maxHeight: 40,
     // flex: 1,
+  },
+  activeBtn: {
+    backgroundColor: color.Orange,
   },
   btnText: {
     color: color.White,

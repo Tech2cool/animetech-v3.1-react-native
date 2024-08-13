@@ -3,7 +3,6 @@ import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import SelectDropdown from 'react-native-select-dropdown';
 import Theme from '../utils/Theme';
 import {useNavigation} from '../hooks/useNavigation';
-import useAnime from '../hooks/useAnime';
 import {useSetting} from '../context/SettingContext';
 import {MCIcon} from '../utils/constant';
 import Skeleton from './Skeleton';
@@ -26,7 +25,6 @@ const EpisodesSheet: React.FC<EpisodeProps> = ({
   isLoading,
 }) => {
   const navigation = useNavigation();
-  const {} = useAnime();
   const {setting} = useSetting();
   const [currentPage, setCurrentPage] = useState({
     index: 0,
@@ -87,8 +85,8 @@ const EpisodesSheet: React.FC<EpisodeProps> = ({
     return [];
   }, [episodesInfo?.list, currentPage]);
   useEffect(() => {
-    if (episodesInfo?.episodes?.length) {
-      const {page, indexInPage} = findIndexInPaginatedData(
+    if (episodesInfo?.episodes?.length > 0 && episodeId) {
+      const {page} = findIndexInPaginatedData(
         episodesInfo?.episodes,
         episodeId,
         100,
@@ -148,7 +146,7 @@ const EpisodesSheet: React.FC<EpisodeProps> = ({
       </View>
       <View style={styles.episodeWrapper}>
         {memoziedList?.map(item => renderitem({item}))}
-        {episodesInfo?.list?.length <= 0 && (
+        {(episodesInfo?.list?.length <= 0 || episodesInfo?.code === 404) && (
           <Text style={styles.noFoundText}>No Episodes Found</Text>
         )}
       </View>
@@ -243,6 +241,7 @@ const styles = StyleSheet.create({
     borderColor: color.LighterGray,
     borderWidth: 0.5,
     paddingVertical: 5,
+    flex: 1,
   },
   noFoundText: {
     fontFamily: font.OpenSansBold,

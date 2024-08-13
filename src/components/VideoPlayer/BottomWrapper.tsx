@@ -19,6 +19,8 @@ const BottomWrapper: React.FC<BottomWrapperProps> = ({
   iconSize,
   onSeek,
 }) => {
+  // console.log('control Bottom Wrapper');
+
   const {videoTimeFormat, videoState} = useVideo();
   const onToggleFullscreen = () => {
     'worklet';

@@ -29,6 +29,7 @@
     "react-native-awesome-slider": "^2.5.3",
     "react-native-document-picker": "^9.3.0",
     "react-native-fast-image": "^8.6.3",
+    "react-native-flipper": "^0.261.0",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.18.0",
     "react-native-linear-gradient": "^2.8.3",
@@ -45,6 +46,8 @@
     "react-native-vector-icons": "^10.1.0",
     "react-native-version-info": "^1.1.1",
     "react-native-video": "^6.2.0",
+    "react-native-webview": "^13.10.5",
+    "react-native-youtube-iframe": "^2.3.0",
     "toastify-react-native": "^5.0.0"
   },
   "devDependencies": {

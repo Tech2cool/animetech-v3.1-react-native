@@ -14,6 +14,8 @@ interface HorizProps {
   isLoading?: boolean;
   onPressAll: string;
   onPressAllParams?: any;
+  onPressCardParams?: any;
+  onPressCardParamsLocation?: string;
 }
 const color = Theme.DARK;
 const font = Theme.FONTS;
@@ -24,24 +26,43 @@ const HorizontalSlider: React.FC<HorizProps> = ({
   isLoading,
   onPressAll,
   onPressAllParams,
+  onPressCardParams,
+  onPressCardParamsLocation,
 }) => {
   const {keyExtractor} = useAnime();
   const {setting} = useSetting();
   const navigation = useNavigation();
   const onPressCard = useCallback(
     (item: animeInfo) => {
-      isVideo
-        ? navigation.navigate('Watch', {
-            id: item.animeId,
-            episodeId: item.episodeId,
-            episodeNum: item.episodeNum,
-            provider: setting.provider,
-          })
-        : navigation.navigate('AnimeInfo', {
-            id: item.animeId,
-          });
+      if (isVideo) {
+        navigation.navigate('Watch', {
+          id: item.animeId,
+          episodeId: item.episodeId,
+          episodeNum: item.episodeNum,
+          provider: setting.provider,
+        });
+      } else if (onPressCardParamsLocation === 'requested-anime') {
+        navigation.navigate('RequestedInfo', {
+          anime: item,
+        });
+      } else if (onPressCardParamsLocation === 'trailer') {
+        navigation.navigate('TrailerInfo', {
+          id: item.id,
+        });
+      } else {
+        navigation.navigate('AnimeInfo', {
+          id: item.animeId,
+          ...onPressCardParams,
+        });
+      }
     },
-    [isVideo, navigation, setting.provider],
+    [
+      isVideo,
+      navigation,
+      setting.provider,
+      onPressCardParams,
+      onPressCardParamsLocation,
+    ],
   );
 
   const renderItem = useCallback(

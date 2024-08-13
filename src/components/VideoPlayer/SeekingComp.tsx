@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {memo} from 'react';
 import Theme from '../../utils/Theme';
 import Ripple from 'react-native-material-ripple';
 
@@ -44,7 +44,7 @@ const SeekingComp: React.FC<SeekingCompProps> = ({
   );
 };
 
-export default SeekingComp;
+export default memo(SeekingComp);
 
 const styles = StyleSheet.create({
   seekWrapper: {

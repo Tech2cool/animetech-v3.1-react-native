@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import Theme from '../utils/Theme';
 import {
   genresList,
@@ -258,7 +258,7 @@ const FilterCard: React.FC<filterProps> = ({
   );
 };
 
-export default FilterCard;
+export default memo(FilterCard);
 
 const styles = StyleSheet.create({
   container: {

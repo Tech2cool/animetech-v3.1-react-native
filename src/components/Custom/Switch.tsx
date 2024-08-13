@@ -1,5 +1,5 @@
 import {StyleSheet, TouchableWithoutFeedback} from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import Animated, {
   interpolateColor,
   useSharedValue,
@@ -69,11 +69,11 @@ const Switch: React.FC<SwitchProps> = ({
     };
   });
 
+  const handleActive = useCallback(() => {
+    setActive(!active);
+  }, [active, setActive]);
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        setActive(!active);
-      }}>
+    <TouchableWithoutFeedback onPress={handleActive}>
       <Animated.View style={[styles.container, backgroundColorStyle]}>
         <Animated.View style={[styles.circle, customSpringStyles]}>
           <MCIcon

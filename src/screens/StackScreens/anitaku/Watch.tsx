@@ -1,5 +1,6 @@
 import {Linking, ScrollView, Share, StyleSheet, View} from 'react-native';
 import React, {useCallback, useEffect, useMemo} from 'react';
+
 import {WatchScreenProps} from '../../../utils/types';
 import Theme from '../../../utils/Theme';
 import VideoPlayer from '../../../components/VideoPlayer/VideoPlayer';
@@ -36,8 +37,9 @@ const Watch: React.FC<WatchScreenProps> = ({navigation, route}) => {
     isFetching,
     isFetchingNextPage,
   } = useApi({id, episodeId});
-  const {onVideoParams, controlState, onChangeShowChats} = useVideo();
+  const {onVideoParams, onChangeShowChats} = useVideo();
 
+  // console.log('watch screen rendered');
   useEffect(() => {
     if (!dataInfo) return;
     onVideoParams(id, episodeId, episodeNum, dataInfo, setting.provider);
@@ -51,7 +53,7 @@ const Watch: React.FC<WatchScreenProps> = ({navigation, route}) => {
     [dataChats],
   );
 
-  const getDefaultUrl = useCallback(() => {
+  const getDefaultUrl = useMemo(() => {
     const defaultSource = dataSource?.sources.find(
       (source: sourceProps) => source.quality === 'default',
     );
@@ -192,7 +194,12 @@ const Watch: React.FC<WatchScreenProps> = ({navigation, route}) => {
 
   return (
     <View style={styles.container}>
-      <VideoPlayer url={getDefaultUrl()?.url} isLoading={isLoadingSource} />
+      <VideoPlayer
+        url={getDefaultUrl?.url}
+        isLoading={isLoadingSource}
+        handleNextBtn={handleNextBtn}
+      />
+
       <ScrollView>
         <WatchInfo
           anime={dataInfo}
@@ -217,10 +224,10 @@ const Watch: React.FC<WatchScreenProps> = ({navigation, route}) => {
           isLoading={isLoadingReaction}
         />
         <WatchChats
-          list={allItems || []}
+          list={allItems!}
           source={dataSource!}
           isLoading={isLoadingChats}
-          onClick={() => onChangeShowChats(!controlState.showChats)}
+          onClick={onChangeShowChats}
         />
         <EpisodesSheet
           episodesInfo={episodesInfo!}

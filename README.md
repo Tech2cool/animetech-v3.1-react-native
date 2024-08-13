@@ -12,7 +12,7 @@ AnimeTech is fully responsive Anime Streaming APP,it made by using anime api,
 
   <li align="center">Responsive design</li>
 
-<a href="https://drive.google.com/file/d/12kmHlfyhsfwcdju7g031RymqtsSJICH6/view?usp=drive_link"><strong>Working the APK</strong></a>
+<a href="https://drive.google.com/file/d/1kTbMUQ36A8OiQRqiE6KyAlCS1KFRQxOs/view?usp=drive_link"><strong>Working the APK</strong></a>
 
 </div>
 
@@ -42,26 +42,37 @@ yarn start
 
 ### Demo Screeshots
 
-<div>
-   <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/splash-gif.gif" height="650" width="350" align="right">
+<div style="display: flex; flex-wrap:wrap; gap:15px; justify-content: center;">
+   <div>
+      <H2 style="text-align:center;">SPLASH SCREEN</H2>
+      <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/splash-gif.gif" height="650" width="350" align="right">
+   </div>
+
+   <div>
+      <H2 style="text-align:center;">HOME SCREEN</H2>
+      <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/home-info.gif" height="650" width="350" align="right">
+   </div>
+   <br>
+
+   <div>
+         <H2 style="text-align:center;">VIDEO SCREEN</H2>
+      <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/video-info.gif" height="650" width="350" align="right">
+   </div>
+   <div>
+      <H2 style="text-align:center;">SEARCH SCREEN</H2>
+      <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/search-info.gif" height="650" width="350" align="right">
+   </div>
+   <br>
+
+   <div>
+      <H2 style="text-align:center;">MY LIST SCREEN</H2>
+      <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/mylist-info.gif" height="650" width="350" align="right">
+   </div>
+   <div>
+      <H2 style="text-align:center;">RANDOM ANIME SCREEN</H2>
+      <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/random-info.gif" height="650" width="350" align="right">
+   </div>
 </div>
 
-<div>
-   <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/home-info.gif" height="650" width="350" align="right">
-</div>
-<br>
 
-<div>
-   <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/video-info.gif" height="650" width="350" align="right">
-</div>
-<div>
-   <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/search-info.gif" height="650" width="350" align="right">
-</div>
-<br>
-
-<div>
-   <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/mylist-info.gif" height="650" width="350" align="right">
-</div>
-<div>
-   <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/random-info.gif" height="650" width="350" align="right">
-</div>
+<h2 align="center"> END</h2>

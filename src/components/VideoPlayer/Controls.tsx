@@ -1,5 +1,5 @@
 import {StyleSheet, View} from 'react-native';
-import React, {memo, useRef, useState} from 'react';
+import React, {memo, useCallback, useMemo, useRef, useState} from 'react';
 import useVideo from '../../hooks/useVideo';
 import Theme from '../../utils/Theme';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -19,7 +19,13 @@ const Controls: React.FC<ControlProps> = ({
   onPressPlayPause,
   toggleFullscreen,
 }) => {
-  const {controlState, videoState, toggleControls, toggleSetting} = useVideo();
+  const {
+    controlState,
+    videoState,
+    toggleControls,
+    toggleSetting,
+    toggleAutoPlay,
+  } = useVideo();
   const [seeking, setSeeking] = useState(false);
   const [totalSeekTime, setTotalSeekTime] = useState<number>(0);
   const [seekType, setseekType] = useState<string | undefined>(undefined);
@@ -27,66 +33,85 @@ const Controls: React.FC<ControlProps> = ({
   const translationY = useSharedValue(0);
 
   const refSeeking = useRef<any>(null);
-  const iconSize = videoState.fullscreen ? 35 : 30;
-  const iconColor = color.White;
-  const onDoubleTapEvent = () => {
+  const iconSize = useMemo(
+    () => (videoState.fullscreen ? 35 : 30),
+    [videoState.fullscreen],
+  );
+  const iconColor = useMemo(() => color.White, []);
+
+  const onDoubleTapEvent = useCallback(() => {
     setSeeking(true);
-  };
+  }, []);
 
-  const seekToWithTimeOut = (seekTYPE: string) => {
-    let seekTime = videoState.currentTime + 10;
-    if (seekTYPE === 'LEFT') {
-      seekTime = videoState.currentTime - 10;
-      setTotalSeekTime(prev => prev - 10);
-    } else {
-      setTotalSeekTime(prev => prev + 10);
-    }
-    onSeek(seekTime);
-    setseekType(seekTYPE);
-    clearTimeout(refSeeking?.current);
-    refSeeking.current = setTimeout(() => {
-      setSeeking(false);
-      setseekType(undefined);
-      setTotalSeekTime(0);
-    }, 500);
-  };
-
-  const tap = Gesture.Tap().onStart(() => {
-    runOnJS(toggleControls)();
-  });
-
-  const DoubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .onStart(() => {
-      runOnJS(onDoubleTapEvent)();
-    });
-
-  const pan = Gesture.Pan()
-    .onStart(() => {
-      translationX.value = 0;
-      translationY.value = 0;
-    })
-    .onUpdate(e => {
-      translationX.value = e.translationX;
-      translationY.value = e.translationY;
-    })
-    .onEnd(e => {
-      const threshold = 45;
-
-      if (Math.abs(e.translationY) > threshold) {
-        if (e.translationY <= -20 && !videoState.fullscreen) {
-          runOnJS(toggleFullscreen)();
-        } else if (
-          (e.translationX < -3 && videoState.fullscreen) ||
-          (e.translationY >= 20 && videoState.fullscreen)
-        ) {
-          runOnJS(toggleFullscreen)();
-        }
+  const seekToWithTimeOut = useCallback(
+    (seekTYPE: string) => {
+      let seekTime = videoState.currentTime + 10;
+      if (seekTYPE === 'LEFT') {
+        seekTime = videoState.currentTime - 10;
+        setTotalSeekTime(prev => prev - 10);
+      } else {
+        setTotalSeekTime(prev => prev + 10);
       }
+      onSeek(seekTime);
+      setseekType(seekTYPE);
+      clearTimeout(refSeeking?.current);
+      refSeeking.current = setTimeout(() => {
+        setSeeking(false);
+        setseekType(undefined);
+        setTotalSeekTime(0);
+      }, 500);
+    },
+    [videoState.currentTime, onSeek],
+  );
 
-      translationX.value = 0;
-      translationY.value = 0;
-    });
+  const tap = useMemo(
+    () =>
+      Gesture.Tap().onStart(() => {
+        runOnJS(toggleControls)();
+      }),
+    [toggleControls],
+  );
+
+  const DoubleTap = useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(2)
+        .onStart(() => {
+          runOnJS(onDoubleTapEvent)();
+        }),
+    [onDoubleTapEvent],
+  );
+
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .onStart(() => {
+          translationX.value = 0;
+          translationY.value = 0;
+        })
+        .onUpdate(e => {
+          translationX.value = e.translationX;
+          translationY.value = e.translationY;
+        })
+        .onEnd(e => {
+          const threshold = 45;
+
+          if (Math.abs(e.translationY) > threshold) {
+            if (e.translationY <= -20 && !videoState.fullscreen) {
+              runOnJS(toggleFullscreen)();
+            } else if (
+              (e.translationX < -3 && videoState.fullscreen) ||
+              (e.translationY >= 20 && videoState.fullscreen)
+            ) {
+              runOnJS(toggleFullscreen)();
+            }
+          }
+
+          translationX.value = 0;
+          translationY.value = 0;
+        }),
+    [toggleFullscreen, translationX, translationY, videoState.fullscreen],
+  );
 
   const taps = Gesture.Exclusive(DoubleTap, tap);
   const gesture = Gesture.Race(pan, taps);
@@ -105,6 +130,10 @@ const Controls: React.FC<ControlProps> = ({
               onPressPlayPause={onPressPlayPause}
               onSeek={onSeek}
               toggleSetting={toggleSetting}
+              paused={videoState.paused}
+              currentTime={videoState.currentTime}
+              autoPlayNext={controlState.autoPlayNext}
+              onChangeAutoPlay={toggleAutoPlay}
             />
             <BottomWrapper
               toggleFullscreen={toggleFullscreen}

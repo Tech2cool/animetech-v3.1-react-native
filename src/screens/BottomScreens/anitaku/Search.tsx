@@ -72,6 +72,14 @@ const Search: React.FC<SearchScreenProps> = () => {
   }, [data, onChangePage]);
   // console.log(list);
   const ListEmptyComponent = useCallback(() => {
+    if (isLoading || search !== '') return <></>;
+    if (!isLoading && search !== '' && list?.length === 0) {
+      return (
+        <View>
+          <Text style={styles.emptyText}>No Result found for {search}</Text>
+        </View>
+      );
+    }
     return (
       <View>
         <Text style={styles.emptyText}>
@@ -79,7 +87,7 @@ const Search: React.FC<SearchScreenProps> = () => {
         </Text>
       </View>
     );
-  }, []);
+  }, [isLoading, search, list]);
 
   const ListHeaderComponent = useCallback(() => {
     if (
@@ -98,26 +106,34 @@ const Search: React.FC<SearchScreenProps> = () => {
               <Text style={styles.applyFilterText}>Filters:</Text>
             </View>
             {appliedFilter.sort && (
-              <TouchableOpacity style={styles.applyFilterBtn}>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={styles.applyFilterBtn}>
                 <Text style={styles.applyFilterText}>{appliedFilter.sort}</Text>
               </TouchableOpacity>
             )}
             {appliedFilter.suborDub && (
-              <TouchableOpacity style={styles.applyFilterBtn}>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={styles.applyFilterBtn}>
                 <Text style={styles.applyFilterText}>
                   {appliedFilter.suborDub}
                 </Text>
               </TouchableOpacity>
             )}
             {appliedFilter.status && (
-              <TouchableOpacity style={styles.applyFilterBtn}>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={styles.applyFilterBtn}>
                 <Text style={styles.applyFilterText}>
                   {appliedFilter.status}
                 </Text>
               </TouchableOpacity>
             )}
             {appliedFilter.type && (
-              <TouchableOpacity style={styles.applyFilterBtn}>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={styles.applyFilterBtn}>
                 <Text style={styles.applyFilterText}>{appliedFilter.type}</Text>
               </TouchableOpacity>
             )}
@@ -130,13 +146,19 @@ const Search: React.FC<SearchScreenProps> = () => {
             )}
             {appliedFilter.genre.length > 0 &&
               appliedFilter.genre.map(genre => (
-                <TouchableOpacity key={genre} style={styles.applyFilterBtn}>
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  key={genre}
+                  style={styles.applyFilterBtn}>
                   <Text style={styles.applyFilterText}>{genre}</Text>
                 </TouchableOpacity>
               ))}
             {appliedFilter.year.length > 0 &&
               appliedFilter.year.map(year => (
-                <TouchableOpacity key={year} style={styles.applyFilterBtn}>
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  key={year}
+                  style={styles.applyFilterBtn}>
                   <Text style={styles.applyFilterText}>{year}</Text>
                 </TouchableOpacity>
               ))}

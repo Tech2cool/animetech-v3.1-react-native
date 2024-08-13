@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {memo} from 'react';
 import Theme from '../../utils/Theme';
 import useAnime from '../../hooks/useAnime';
 import Skeleton from '../Skeleton';
@@ -16,7 +16,9 @@ const WatchInfo: React.FC<WatchInfoProps> = ({
   episodeNum,
   isLoading,
 }) => {
-  const {memoizedTitle} = useAnime();
+  const {memoizedTitle, onPressAnime} = useAnime();
+  // console.log('watch Info rendered');
+
   return (
     <View style={styles.container}>
       {isLoading && (
@@ -25,7 +27,7 @@ const WatchInfo: React.FC<WatchInfoProps> = ({
           <Skeleton width={'80%'} height={18} opacity={1} />
         </View>
       )}
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=> onPressAnime(anime)}>
         <View style={styles.infoWrapper}>
           <Text numberOfLines={2} style={styles.animeTitle}>
             {memoizedTitle(anime)}
@@ -37,7 +39,7 @@ const WatchInfo: React.FC<WatchInfoProps> = ({
   );
 };
 
-export default WatchInfo;
+export default memo(WatchInfo);
 
 const styles = StyleSheet.create({
   container: {

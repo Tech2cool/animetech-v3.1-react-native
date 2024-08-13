@@ -1,19 +1,14 @@
-import {Appearance} from 'react-native';
+// import {Appearance} from 'react-native';
 
-const colorScheme = Appearance.getColorScheme();
-const isDarkMode = colorScheme === 'dark';
-if (colorScheme === 'dark') {
-  // Use dark color scheme
-  // console.log('dark');
-}
-
+// const colorScheme = Appearance.getColorScheme();
+// const isDarkMode = colorScheme === 'dark';
 export default {
   DARK: {
-    DarkBackGround: isDarkMode ? '#171717' : '#e8e8e8',
-    DarkBackGround2: isDarkMode ? '#222222' : '#dddddd',
-    Black: isDarkMode ? '#0b0b0b' : '#f4f4f4',
-    DarkGray: isDarkMode ? '#333333' : '#cccccc',
-    White: isDarkMode ? '#FFFFFF' : '#000000',
+    DarkBackGround: '#171717',
+    DarkBackGround2: '#222222',
+    Black: '#0b0b0b',
+    DarkGray: '#333333',
+    White: '#ffffff',
     Orange: '#ff7b00',
     LighterGray: '#444444',
     LightGray: '#CCCCCC',

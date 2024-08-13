@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {SERVER_BASE_URL} from '../utils/constant';
+import {Toast} from 'toastify-react-native';
 const API = axios.create({
   baseURL: SERVER_BASE_URL,
 });
@@ -41,6 +42,15 @@ interface chatsParams {
 export const fetchRecentRelease = async (page: pageQuery = 1) => {
   try {
     const resp = await API.get(`/recent?page=${page}`);
+    return resp.data;
+  } catch (error: any) {
+    throw error?.response?.data;
+  }
+};
+
+export const fetchDbHome = async () => {
+  try {
+    const resp = await API.get('/db/home');
     return resp.data;
   } catch (error: any) {
     throw error?.response?.data;
@@ -251,6 +261,25 @@ export const fetchReaction = async (id: idQuery) => {
     // console.log(resp.data)
     return resp.data;
   } catch (error: any) {
+    throw error?.response?.data;
+  }
+};
+
+export const updateHomeData = async () => {
+  try {
+    const recent = await API.get(`${SERVER_BASE_URL}/db/recent`);
+    const topAiring = await API.get(`${SERVER_BASE_URL}/db/top-airing`);
+    const popular = await API.get(`${SERVER_BASE_URL}/db/popular`);
+    const trending = await API.get(`${SERVER_BASE_URL}/db/trending`);
+    const top10 = await API.get(`${SERVER_BASE_URL}/db/top-10`);
+    const movies = await API.get(`${SERVER_BASE_URL}/db/movies`);
+    const upcoming = await API.get(`${SERVER_BASE_URL}/db/upcoming`);
+    const home = await API.get(`${SERVER_BASE_URL}/db/home-up`);
+    // console.log('updated');
+    return {message: 'updated'};
+  } catch (error: any) {
+    // console.log('error', error);
+
     throw error?.response?.data;
   }
 };

@@ -6,12 +6,13 @@ import {
   VideoTrack,
 } from 'react-native-video';
 
-interface videoStateProps {
+export interface videoStateProps {
   url: string | undefined;
   currentTime: number;
   duration: number;
   paused: boolean;
   isBuffering: boolean;
+  isSeeking: boolean;
   fullscreen: boolean;
   resizeMode: 'none' | 'contain' | 'cover' | 'stretch';
   videoTracks: VideoTrack[];
@@ -21,7 +22,7 @@ interface videoStateProps {
   playableDuration: number;
   seekableDuration: number;
 }
-interface controlProps {
+export interface controlProps {
   showControl: boolean;
   showSetting: boolean;
   showResizeSetting: boolean;
@@ -59,6 +60,7 @@ export const initialStateVideoState: videoStateProps = {
   paused: false,
   fullscreen: false,
   isBuffering: false,
+  isSeeking: false,
   currentTime: 0,
   duration: 0,
   playableDuration: 0,

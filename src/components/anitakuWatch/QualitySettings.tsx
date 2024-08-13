@@ -48,6 +48,7 @@ const QualitySetting = () => {
                       type: SelectedVideoTrackType.RESOLUTION,
                       value: track.height,
                     },
+                    quality: track?.height?.toString() || 'default',
                   }));
                 }}>
                 <MCIcon

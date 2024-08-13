@@ -4,7 +4,6 @@ import {
   Dimensions,
   Modal,
   Share,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -215,5 +214,3 @@ const VersionChecker = () => {
 };
 
 export default VersionChecker;
-
-const styles = StyleSheet.create({});

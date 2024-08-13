@@ -260,16 +260,18 @@ const useSearch = (query: string) => {
   if (error) {
     Toast.error(error?.message, 'top');
   }
-  const list: animeInfo[] =
-    filteredList?.length > 0
-      ? filteredList
-      : data?.list?.sort((a: animeInfo, b: animeInfo) => a?.index - b?.index) ??
-        [];
-
   const memoizedLoading = useMemo(() => {
     const loading = isLoading || isFetching || isPending || isRefetching;
     return loading;
   }, [isFetching, isLoading, isPending, isRefetching]);
+
+  const list: animeInfo[] = memoizedLoading
+    ? []
+    : filteredList?.length > 0
+    ? filteredList
+    : data?.list?.sort((a: animeInfo, b: animeInfo) => a?.index - b?.index) ??
+      [];
+
   return {
     list,
     data,

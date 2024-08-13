@@ -1,18 +1,22 @@
 import {StyleSheet, View} from 'react-native';
-import React from 'react';
+import React, {memo} from 'react';
 import {TapControler} from '../TapController';
 import {F5Icon, IIcon, MCIcon} from '../../utils/constant';
 import Theme from '../../utils/Theme';
-import useVideo from '../../hooks/useVideo';
 import {runOnJS} from 'react-native-reanimated';
 import Switch from '../Custom/Switch';
+import {useNavigation} from '../../hooks/useNavigation';
 const color = Theme.DARK;
 interface TopWrapperProps {
   onPressPlayPause: () => void;
+  onChangeAutoPlay: () => void;
   toggleSetting: () => void;
   onSeek: (value: number) => void;
   iconSize: number;
   iconColor: string;
+  currentTime: number;
+  paused: boolean;
+  autoPlayNext: boolean;
 }
 
 const TopWrapper: React.FC<TopWrapperProps> = ({
@@ -21,22 +25,33 @@ const TopWrapper: React.FC<TopWrapperProps> = ({
   iconSize,
   iconColor,
   toggleSetting,
+  onChangeAutoPlay,
+  currentTime,
+  paused,
+  autoPlayNext,
 }) => {
-  const {videoState, controlState, onChangeAutoPlay} = useVideo();
+  // const {videoState, controlState, onChangeAutoPlay} = useVideo();
+  const navigation = useNavigation();
+
   const onDummy = () => {
     'worklet';
   };
+  const onGoBack = () => {
+    'worklet';
+    runOnJS(navigation.goBack)();
+  };
+
   const onPauseTapHandler = () => {
     'worklet';
     runOnJS(onPressPlayPause)();
   };
   const onSeekFowardTapHandler = () => {
     'worklet';
-    runOnJS(onSeek)(videoState.currentTime + 10);
+    runOnJS(onSeek)(currentTime + 10);
   };
   const onSeekRewindTapHandler = () => {
     'worklet';
-    runOnJS(onSeek)(videoState.currentTime - 10);
+    runOnJS(onSeek)(currentTime - 10);
   };
   const onToggleSetting = () => {
     'worklet';
@@ -46,7 +61,7 @@ const TopWrapper: React.FC<TopWrapperProps> = ({
   return (
     <View style={styles.TopWrapper}>
       <View style={styles.TopHeader}>
-        <TapControler onPress={onDummy}>
+        <TapControler onPress={onGoBack}>
           <MCIcon name={'chevron-down'} size={iconSize} color={color.White} />
         </TapControler>
 
@@ -55,7 +70,7 @@ const TopWrapper: React.FC<TopWrapperProps> = ({
             <Switch
               activeColor={'rgba(240,240,240,0.4)'}
               inActiveColor={'rgba(50,50,50,0.4)'}
-              active={controlState.autoPlayNext}
+              active={autoPlayNext}
               setActive={onChangeAutoPlay}
             />
           </TapControler>
@@ -75,7 +90,7 @@ const TopWrapper: React.FC<TopWrapperProps> = ({
         </TapControler>
         <TapControler onPress={onPauseTapHandler}>
           <F5Icon
-            name={videoState.paused ? 'play-circle' : 'pause-circle'}
+            name={paused ? 'play-circle' : 'pause-circle'}
             size={iconSize + 5}
             color={color.White}
           />
@@ -92,7 +107,7 @@ const TopWrapper: React.FC<TopWrapperProps> = ({
   );
 };
 
-export default TopWrapper;
+export default memo(TopWrapper);
 
 const styles = StyleSheet.create({
   TopWrapper: {

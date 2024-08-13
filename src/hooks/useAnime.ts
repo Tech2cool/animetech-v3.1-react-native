@@ -25,6 +25,8 @@ const useAnime = () => {
       return item?.coverImage[0].large;
     } else if (item?.animeImg) {
       return item.animeImg;
+    } else if (item?.img) {
+      return item.img;
     }
   }, []);
 
@@ -59,7 +61,8 @@ const useAnime = () => {
     [navigation],
   );
   const keyExtractor = useCallback(
-    (item: animeInfo) => `${item.animeID || item.animeId}`,
+    (item: animeInfo, index: number) =>
+      `${item?.animeID || item?.animeId || item?.id || index}`,
     [],
   );
   const getItemLayout = useCallback(

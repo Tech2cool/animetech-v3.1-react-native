@@ -7,16 +7,15 @@ import {
   View,
 } from 'react-native';
 import React, {useCallback, useState} from 'react';
-import {AnimeInfoScreenProps} from '../../../utils/types';
+import {RequestedScreenProps} from '../../../utils/types';
 import Theme from '../../../utils/Theme';
-import {fetchEpisodes, fetchInfo, fetchInfoV2} from '../../../api/anitaku';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {fetchEpisodes} from '../../../api/anitaku';
+import {useQuery} from '@tanstack/react-query';
 import {Toast} from 'toastify-react-native';
 import FastImage from 'react-native-fast-image';
 import useAnime from '../../../hooks/useAnime';
 import LinearGradient from 'react-native-linear-gradient';
 import RandomColorCard from '../../../components/RandomColorCard';
-import LoadingInfo from './LoadingInfo';
 import HeaderInfo from './HeaderInfo';
 import {SERVER_BASE_URL} from '../../../utils/constant';
 import {useSetting} from '../../../context/SettingContext';
@@ -25,47 +24,28 @@ import EpisodesSheet from '../../../components/EpisodesSheet';
 const color = Theme.DARK;
 const font = Theme.FONTS;
 const colors = ['transparent', color.DarkBackGround];
-const AnimeInfo: React.FC<AnimeInfoScreenProps> = ({route}) => {
-  const {id, type} = route.params;
+const RequestedInfo: React.FC<RequestedScreenProps> = ({route}) => {
+  const {anime} = route.params;
   const [refreshing, setRefreshing] = useState(false);
-  const queryClient = useQueryClient();
   const {setting} = useSetting();
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    queryClient.invalidateQueries({queryKey: ['info']});
     // queryClient.invalidateQueries({queryKey: ['Episodes']});
 
     setTimeout(() => {
       setRefreshing(false);
     }, 1500);
-  }, [queryClient]);
+  }, []);
 
   const {memoizedPoster, memoizedTitle} = useAnime();
-  const fetchData = async () => {
-    try {
-      let resp;
-      if (type === 2) {
-        resp = await fetchInfoV2(id);
-      } else {
-        resp = await fetchInfo(id);
-      }
-      return resp;
-    } catch (err: any) {
-      throw err;
-    }
-  };
-  const {data, isLoading, error} = useQuery({
-    queryKey: ['info', id],
-    queryFn: fetchData,
-  });
 
   const {
     data: episodesInfo,
     isLoading: isLoadingEpisodes,
     error: errorEpisode,
   } = useQuery<episodeQuery>({
-    queryKey: ['Episodes', id, refreshing],
-    queryFn: () => fetchEpisodes(id),
+    queryKey: ['Episodes', anime?.animeId, refreshing],
+    queryFn: () => fetchEpisodes(anime?.animeId),
   });
 
   const handleShare = useCallback(async () => {
@@ -73,9 +53,9 @@ const AnimeInfo: React.FC<AnimeInfoScreenProps> = ({route}) => {
       const url =
         SERVER_BASE_URL +
         '/share' +
-        `?type=anime&id=${id}&provider=${setting.provider}`;
-      const title = memoizedTitle(data);
-      const message = memoizedTitle(data) + '\n' + '\n' + url;
+        `?type=anime&id=${anime?.animeId}&provider=${setting.provider}`;
+      const title = memoizedTitle(anime);
+      const message = memoizedTitle(anime) + '\n' + '\n' + url;
 
       await Share.share({
         title: title,
@@ -85,11 +65,8 @@ const AnimeInfo: React.FC<AnimeInfoScreenProps> = ({route}) => {
     } catch (err: any) {
       Toast.error(err?.message, 'top');
     }
-  }, [data, id, memoizedTitle, setting.provider]);
+  }, [anime, memoizedTitle, setting.provider]);
 
-  if (error) {
-    Toast.error(error?.message, 'top');
-  }
   if (errorEpisode) {
     Toast.error(errorEpisode?.message, 'top');
   }
@@ -101,12 +78,12 @@ const AnimeInfo: React.FC<AnimeInfoScreenProps> = ({route}) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
-        <LoadingInfo isLoading={isLoading} />
+        {/* <LoadingInfo isLoading={isLoading} /> */}
 
         {/* Poster wrapper */}
         <LinearGradient colors={colors} style={styles.linearGradient}>
           <FastImage
-            source={{uri: memoizedPoster(data)}}
+            source={{uri: memoizedPoster(anime)}}
             style={styles.poster}
           />
         </LinearGradient>
@@ -114,37 +91,35 @@ const AnimeInfo: React.FC<AnimeInfoScreenProps> = ({route}) => {
 
         {/* card wrapper */}
         <View style={styles.infoWrapper}>
-          <Text style={styles.titleText}>{memoizedTitle(data)}</Text>
+          <Text style={styles.titleText}>{memoizedTitle(anime)}</Text>
           <View style={styles.genreWrapper}>
-            {data?.genres?.map((genre: string) => (
+            {anime?.genres?.map((genre: string) => (
               <RandomColorCard title={genre} key={genre} />
             ))}
-            <RandomColorCard title={data?.type} />
-            <RandomColorCard title={data?.releasedDate} />
-            <RandomColorCard title={data?.status} />
+            <RandomColorCard title={anime?.type} />
+            <RandomColorCard title={anime?.releasedDate || anime?.year || ''} />
+            <RandomColorCard title={anime?.status} />
             <RandomColorCard
               title={
                 'Total Episodes ' +
-                (data?.totalEpisodes || `${episodesInfo?.episodes?.length}`)
+                (anime?.totalEpisodes || `${episodesInfo?.episodes?.length}`)
               }
             />
           </View>
           <View style={styles.otherNameWrapper}>
-            <RandomColorCard
-              title={
-                'OtherNames: ' + data?.otherNames?.join()?.replaceAll(',', ', ')
-              }
-            />
+            <RandomColorCard title={anime?.req_status || ''} />
           </View>
           <View style={styles.descWrapper}>
-            <RandomColorCard title={'Description: ' + data?.synopsis} />
+            <RandomColorCard
+              title={'Description: ' + (anime?.synopsis || anime?.description)}
+            />
           </View>
         </View>
         {/* card wrapper end*/}
 
         <EpisodesSheet
-          id={id}
-          anime={data}
+          id={anime?.animeId}
+          anime={anime}
           episodesInfo={episodesInfo!}
           isLoading={isLoadingEpisodes}
         />
@@ -155,7 +130,7 @@ const AnimeInfo: React.FC<AnimeInfoScreenProps> = ({route}) => {
   );
 };
 
-export default AnimeInfo;
+export default RequestedInfo;
 
 const styles = StyleSheet.create({
   container: {

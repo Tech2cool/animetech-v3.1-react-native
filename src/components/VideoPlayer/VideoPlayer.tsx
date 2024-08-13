@@ -1,18 +1,24 @@
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, Alert, StyleSheet, View} from 'react-native';
 import React from 'react';
-import Video from 'react-native-video';
+import Video, {OnVideoErrorData} from 'react-native-video';
 import useVideo from '../../hooks/useVideo';
 import Controls from './Controls';
+
 interface VideoPlayerProps {
   url: string | undefined;
   isLoading: boolean;
+  handleNextBtn: () => void;
 }
 // const {width, height} = Dimensions.get('window');
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({url, isLoading}) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  url = '',
+  isLoading = false,
+  handleNextBtn,
+}) => {
   const {
     videoState,
-    VideoRef,
+    videoRef,
     onLoad,
     onLoadStart,
     onSeek,
@@ -20,23 +26,31 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({url, isLoading}) => {
     onProgress,
     onPressPlayPause,
     toggleFullscreen,
+    onPlaybackStateChanged,
+    onEnd,
   } = useVideo();
 
   return (
     <View
       style={videoState.fullscreen ? styles.containerFull : styles.container}>
       <Video
-        ref={VideoRef}
+        ref={videoRef}
         source={{uri: url}}
         style={styles.videoPlayer}
         onLoad={onLoad}
         onLoadStart={onLoadStart}
         onProgress={onProgress}
         onBuffer={onBuffer}
+        onEnd={() => onEnd(handleNextBtn)}
         {...videoState}
         rate={videoState.playbackRate}
-        fullscreen={false}
         controls={false}
+        fullscreen={false}
+        progressUpdateInterval={1000}
+        onPlaybackStateChanged={onPlaybackStateChanged}
+        onError={(e: OnVideoErrorData) => {
+          Alert.alert('error', e?.error?.errorString);
+        }}
       />
       <Controls
         onSeek={onSeek}

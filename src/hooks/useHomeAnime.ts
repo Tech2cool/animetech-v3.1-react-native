@@ -1,10 +1,5 @@
 import {useQueries} from '@tanstack/react-query';
-import {
-  fetchMovies,
-  fetchPopular,
-  fetchRecentRelease,
-  fetchTrending,
-} from '../api/anitaku';
+import {fetchPopular, fetchRecentRelease, fetchTrending} from '../api/anitaku';
 
 const useHomeAnime = () => {
   const {loading} = useQueries({
@@ -21,10 +16,10 @@ const useHomeAnime = () => {
         queryKey: ['PopularRelease', 1],
         queryFn: () => fetchPopular(1),
       },
-      {
-        queryKey: ['MovieRelease', 1],
-        queryFn: () => fetchMovies({page: 1}),
-      },
+      // {
+      //   queryKey: ['MovieRelease', 1],
+      //   queryFn: () => fetchMovies({page: 1}),
+      // },
     ],
     combine: results => {
       return {
@@ -34,7 +29,25 @@ const useHomeAnime = () => {
     },
   });
 
-  return {loading};
+  // const {data, isLoading, error, isFetched} = useQuery({
+  //   queryKey: ['db-home'],
+  //   queryFn: () => fetchDbHome(),
+  // });
+  // useEffect(() => {
+  //   const fetchUpdateData = async () => {
+  //     try {
+  //       const resp = await updateHomeData();
+  //       console.log(resp);
+  //       return resp;
+  //     } catch (err: any) {
+  //       console.log(err?.mesage);
+  //     }
+  //   };
+  //   if (isFetched) {
+  //     fetchUpdateData();
+  //   }
+  // }, [isFetched]);
+  return {isLoading: loading};
 };
 
 export default useHomeAnime;

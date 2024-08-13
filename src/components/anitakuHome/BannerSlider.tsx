@@ -5,11 +5,10 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
 import Theme from '../../utils/Theme';
-import {fetchPopular} from '../../api/anitaku';
 import {useSetting} from '../../context/SettingContext';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,35 +16,63 @@ import {MCIcon} from '../../utils/constant';
 import {Toast} from 'toastify-react-native';
 import useAnime from '../../hooks/useAnime';
 import Skeleton from '../Skeleton';
+import {useNavigation} from '../../hooks/useNavigation';
 const {width} = Dimensions.get('window');
 const color = Theme.DARK;
 const font = Theme.FONTS;
 const colors = ['transparent', color.DarkBackGround];
-interface SmallSliderProps {
-  refreshing: boolean;
+interface bigSliderProps {
+  isLoading: boolean;
+  list: animeInfo[];
+  error: any;
+  sliderStyle?: ViewStyle;
+  title?: String;
+  onPressCardParamsLocation?: string;
+  onPressCardParams?: any;
 }
-const SmallImageSlider: React.FC<SmallSliderProps> = ({refreshing}) => {
+const BannerSlider: React.FC<bigSliderProps> = ({
+  list = [],
+  isLoading,
+  error,
+  sliderStyle,
+  title = '',
+  onPressCardParamsLocation,
+  onPressCardParams,
+}) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
   const {setting} = useSetting();
-  const {
-    onPressAnime,
-    memoizedBannerOrPoster,
-    memoizedTitle,
-    keyExtractor,
-    getItemLayout,
-  } = useAnime();
+  const navigation = useNavigation();
+  const {memoizedBannerOrPoster, memoizedTitle, keyExtractor, getItemLayout} =
+    useAnime();
 
-  const {data, isLoading, error} = useQuery({
-    queryKey: ['PopularRelease', 1, refreshing],
-    queryFn: () => fetchPopular(1),
-  });
+  const onPressCard = useCallback(
+    (item: animeInfo) => {
+      if (onPressCardParamsLocation === 'requested-anime') {
+        navigation.navigate('RequestedInfo', {
+          anime: item,
+        });
+      } else if (onPressCardParamsLocation === 'trailer') {
+        navigation.navigate('TrailerInfo', {
+          id: item.id,
+        });
+      } else {
+        navigation.navigate('AnimeInfo', {
+          id: item?.animeId || item?.animeID || item?.id,
+          ...onPressCardParams,
+        });
+      }
+    },
+    [navigation, onPressCardParams, onPressCardParamsLocation],
+  );
+
   const renderItem = useCallback(
     ({item}: {item: animeInfo}) => {
       return (
         <TouchableOpacity
-          style={styles.slider}
-          onPress={() => onPressAnime(item)}>
+          style={[styles.slider, sliderStyle]}
+          activeOpacity={0.8}
+          onPress={() => onPressCard(item)}>
           <FastImage
             source={{uri: memoizedBannerOrPoster(item)}}
             style={styles.image}
@@ -75,34 +102,38 @@ const SmallImageSlider: React.FC<SmallSliderProps> = ({refreshing}) => {
         </TouchableOpacity>
       );
     },
-    [memoizedBannerOrPoster, memoizedTitle, onPressAnime],
+    [memoizedBannerOrPoster, memoizedTitle, onPressCard, sliderStyle],
   );
 
   useEffect(() => {
     // setInterval Bugs sometime in android
-    if (currentIndex >= 0 && data?.list?.length > 0) {
+    if (currentIndex >= 0 && list?.length > 0) {
       const sid = setTimeout(() => {
         flatListRef?.current?.scrollToIndex({
           animated: true,
           index: currentIndex,
         });
-        setCurrentIndex(prev => (prev < data?.list.length - 1 ? prev + 1 : 0));
+        setCurrentIndex(prev => (prev < list?.length - 1 ? prev + 1 : 0));
       }, setting.sliderIntervalTime || 5000);
       return () => clearTimeout(sid);
     }
-  }, [currentIndex, data?.list?.length, setting.sliderIntervalTime]);
+  }, [currentIndex, list?.length, setting.sliderIntervalTime]);
 
   if (error) {
     Toast.error(error?.message, 'top');
   }
   return (
     <View style={styles.container}>
+      <View style={{paddingVertical: 5}}>
+        <Text style={styles.titleText}>{title}</Text>
+      </View>
       {isLoading && (
         <>
           <Skeleton
             width={width}
             style={{
-              aspectRatio: 16 / 6,
+              aspectRatio: 10 / 5,
+              ...sliderStyle,
             }}
           />
         </>
@@ -110,9 +141,7 @@ const SmallImageSlider: React.FC<SmallSliderProps> = ({refreshing}) => {
       <FlatList
         ref={flatListRef}
         horizontal={true}
-        data={data?.list?.sort(
-          (a: animeInfo, b: animeInfo) => a?.index - b?.index,
-        )}
+        data={list?.sort((a: animeInfo, b: animeInfo) => a?.index - b?.index)}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         getItemLayout={getItemLayout}
@@ -121,15 +150,14 @@ const SmallImageSlider: React.FC<SmallSliderProps> = ({refreshing}) => {
   );
 };
 
-export default SmallImageSlider;
+export default BannerSlider;
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
   },
-
   slider: {
-    aspectRatio: 16 / 6,
+    aspectRatio: 10 / 5,
     width: width,
     position: 'relative',
   },
