@@ -67,6 +67,3 @@ yarn start
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/random-info.gif" height="650" width="350" align="right">
    </div>
 </div>
-
-
-<h2 align="center"> END</h2>
