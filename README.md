@@ -42,28 +42,28 @@ yarn start
 
 ### Demo Screeshots
 
-<div style="display: flex; flex-wrap:wrap; gap:15px; justify-content: center;">
-   <div>
+<div style="display: flex; flex-wrap:wrap; justify-content: center; align-items:center">
+   <div style="margin:10px 15px">
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/splash-gif.gif" height="650" width="350" align="right">
    </div>
 
-   <div>
+   <div style="margin:10px 15px">
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/home-info.gif" height="650" width="350" align="right">
    </div>
    <br>
 
-   <div>
+   <div style="margin:10px 15px">
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/video-info.gif" height="650" width="350" align="right">
    </div>
-   <div>
+   <div style="margin:10px 15px">
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/search-info.gif" height="650" width="350" align="right">
    </div>
    <br>
 
-   <div>
+   <div style="margin:10 10">
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/mylist-info.gif" height="650" width="350" align="right">
    </div>
-   <div>
+   <div style="margin:10px 15px">
       <img src="https://raw.githubusercontent.com/Tech2cool/animetech-files/main/random-info.gif" height="650" width="350" align="right">
    </div>
 </div>
