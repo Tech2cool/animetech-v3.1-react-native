@@ -6,6 +6,7 @@ import Theme from '../../utils/Theme';
 import {runOnJS} from 'react-native-reanimated';
 import Switch from '../Custom/Switch';
 import {useNavigation} from '../../hooks/useNavigation';
+import useVideo from '../../hooks/useVideo';
 const color = Theme.DARK;
 interface TopWrapperProps {
   onPressPlayPause: () => void;
@@ -30,15 +31,22 @@ const TopWrapper: React.FC<TopWrapperProps> = ({
   paused,
   autoPlayNext,
 }) => {
-  // const {videoState, controlState, onChangeAutoPlay} = useVideo();
+  const {videoState, toggleFullscreen} = useVideo();
   const navigation = useNavigation();
 
+  const toggleBack = () => {
+    if (videoState.fullscreen) {
+      toggleFullscreen();
+    } else {
+      navigation.goBack();
+    }
+  };
   const onDummy = () => {
     'worklet';
   };
   const onGoBack = () => {
     'worklet';
-    runOnJS(navigation.goBack)();
+    runOnJS(toggleBack)();
   };
 
   const onPauseTapHandler = () => {

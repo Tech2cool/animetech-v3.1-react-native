@@ -187,6 +187,15 @@ export async function fetchVersion() {
   }
 }
 
+export async function fetchNotices() {
+  try {
+    const response = await API.get(`${SERVER_BASE_URL}/notices`);
+    return response?.data;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
 export const fetchRandom = async (id: string | number) => {
   try {
     const resp = await API.get(`${SERVER_BASE_URL}/random?id=${id}`);

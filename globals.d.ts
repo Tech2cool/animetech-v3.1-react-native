@@ -51,7 +51,7 @@ interface animeInfo {
   isDub: boolean;
   season: null;
   status: string;
-  totalEpisodes: 10;
+  totalEpisodes: number;
   type: string;
   updatedAt: string;
   episodes: {
@@ -176,6 +176,14 @@ interface SourceQuery {
   outro: {
     start: number;
     end: number;
+  };
+  plyr: {
+    main: string;
+    backup: string;
+  };
+  nspl: {
+    main: string;
+    backup: string;
   };
 }
 

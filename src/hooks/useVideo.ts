@@ -135,6 +135,19 @@ const useVideo = () => {
       videoRef.current?.presentFullscreenPlayer();
     }
   }, [videoState.fullscreen, setVideoState]);
+  const toggleFullscreen2 = useCallback(() => {
+    if (videoState.fullscreen) {
+      setVideoState(prev => ({...prev, fullscreen: false}));
+      Orientation.lockToPortrait();
+      // SystemNavigationBar.stickyImmersive(false);
+      // videoRef.current?.dismissFullscreenPlayer();
+    } else {
+      setVideoState(prev => ({...prev, fullscreen: true}));
+      Orientation.lockToLandscape();
+      // SystemNavigationBar.stickyImmersive();
+      // videoRef.current?.presentFullscreenPlayer();
+    }
+  }, [videoState.fullscreen, setVideoState]);
 
   const onVideoParams = useCallback(
     (
@@ -445,6 +458,7 @@ const useVideo = () => {
     videoTimeFormat,
     toggleSetting,
     toggleFullscreen,
+    toggleFullscreen2,
     setResizeVideo,
     settingOp,
     resizeModeSettingOp,

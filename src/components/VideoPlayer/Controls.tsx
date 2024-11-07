@@ -117,13 +117,11 @@ const Controls: React.FC<ControlProps> = ({
   const gesture = Gesture.Race(pan, taps);
 
   return (
-    <View pointerEvents="box-none" style={[styles.wrapper]}>
+    <View style={[styles.wrapper]}>
       <GestureDetector gesture={gesture}>
         <Animated.View style={styles.flexContainer}>
           <View
-            style={controlState.showControl ? styles.container : styles.noOps}
-            pointerEvents={videoState.fullscreen ? 'box-none' : 'auto'} // Allow touch events to pass through in fullscreen
-          >
+            style={controlState.showControl ? styles.container : styles.noOps}>
             <TopWrapper
               iconSize={iconSize}
               iconColor={iconColor}
@@ -135,14 +133,15 @@ const Controls: React.FC<ControlProps> = ({
               autoPlayNext={controlState.autoPlayNext}
               onChangeAutoPlay={toggleAutoPlay}
             />
-            <BottomWrapper
-              toggleFullscreen={toggleFullscreen}
-              iconSize={iconSize}
-              onSeek={onSeek}
-            />
           </View>
         </Animated.View>
       </GestureDetector>
+      <BottomWrapper
+        toggleFullscreen={toggleFullscreen}
+        iconSize={iconSize}
+        onSeek={onSeek}
+      />
+
       <BottomSliderOnly onSeek={onSeek} />
       <SeekingComp
         seekToWithTimeOut={seekToWithTimeOut}

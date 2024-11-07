@@ -37,7 +37,7 @@ const StackNavigation: React.FC = () => {
     });
     // Unsubscribe
     return () => unsubscribe();
-  }, []);
+  }, [setSetting]);
 
   if (isLoading) {
     return <SplashScreen />;

@@ -80,7 +80,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2
-        versionName "2.0.4-stable"
+        versionName "2.0.5-stable"
     }
     signingConfigs {
         release {

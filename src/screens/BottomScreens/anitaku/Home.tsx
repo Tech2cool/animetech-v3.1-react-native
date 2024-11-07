@@ -18,7 +18,6 @@ import HorizontalSlider from '../../../components/HorizontalSlider';
 const color = Theme.DARK;
 const Home: React.FC<HomeScreenProps> = () => {
   const [refreshing, setRefreshing] = useState(false);
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {

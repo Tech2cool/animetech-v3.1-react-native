@@ -21,7 +21,7 @@ const BottomWrapper: React.FC<BottomWrapperProps> = ({
 }) => {
   // console.log('control Bottom Wrapper');
 
-  const {videoTimeFormat, videoState} = useVideo();
+  const {videoTimeFormat, videoState, controlState} = useVideo();
   const onToggleFullscreen = () => {
     'worklet';
     runOnJS(toggleFullscreen)();
@@ -42,7 +42,7 @@ const BottomWrapper: React.FC<BottomWrapperProps> = ({
   }, [videoState.duration]);
 
   return (
-    <>
+    <View style={!controlState.showControl ? styles.none : styles.container}>
       <View style={styles.bottomWrapper}>
         <View style={styles.timeHolder}>
           <Text style={styles.currentTime}>{memoziedCurrentTime}</Text>
@@ -63,25 +63,29 @@ const BottomWrapper: React.FC<BottomWrapperProps> = ({
           thumbTintColor={color.Orange}
           minimumTrackTintColor={color.Orange}
         />
+
         <View
           style={videoState.fullscreen ? styles.fullBottomView : styles.none}>
           <Text>upcoming</Text>
         </View>
       </View>
-    </>
+    </View>
   );
 };
 
 export default BottomWrapper;
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
   bottomWrapper: {
     position: 'relative',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     paddingHorizontal: 10,
-    bottom: -5,
+    // bottom: -5,
   },
   timeHolder: {
     flexDirection: 'row',

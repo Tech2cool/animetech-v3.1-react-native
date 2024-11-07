@@ -1,5 +1,15 @@
-import {Linking, ScrollView, Share, StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect, useMemo} from 'react';
+import {
+  Dimensions,
+  Linking,
+  ScrollView,
+  Share,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 import {WatchScreenProps} from '../../../utils/types';
 import Theme from '../../../utils/Theme';
@@ -16,8 +26,11 @@ import BSheetHolder from '../../../components/anitakuWatch/BSheetHolder';
 import useApi from '../../../hooks/useApi';
 import {Toast} from 'toastify-react-native';
 import useVideo from '../../../hooks/useVideo';
+import WebView from 'react-native-webview';
 
 const color = Theme.DARK;
+const font = Theme.FONTS;
+
 const Watch: React.FC<WatchScreenProps> = ({navigation, route}) => {
   const {id, episodeId, episodeNum} = route.params;
   const {memoizedTitle} = useAnime();
@@ -37,7 +50,9 @@ const Watch: React.FC<WatchScreenProps> = ({navigation, route}) => {
     isFetching,
     isFetchingNextPage,
   } = useApi({id, episodeId});
-  const {onVideoParams, onChangeShowChats} = useVideo();
+  const {onVideoParams, onChangeShowChats, toggleFullscreen2, videoState} =
+    useVideo();
+  const [selectedServer, setSelectedServer] = useState(0);
 
   // console.log('watch screen rendered');
   useEffect(() => {
@@ -192,13 +207,61 @@ const Watch: React.FC<WatchScreenProps> = ({navigation, route}) => {
     }
   }, [episodeId, episodesInfo?.episodes, id, navigation]);
 
-  return (
-    <View style={styles.container}>
+  const onPressServer = (index: number) => {
+    setSelectedServer(index);
+  };
+
+  const getServerVideo = useMemo(() => {
+    if (selectedServer === 1) {
+      return (
+        <WebViewPlayer
+          url={dataSource?.plyr.main || ''}
+          fullscreen={videoState.fullscreen}
+          toggleFullscreen2={toggleFullscreen2}
+        />
+      );
+    } else if (selectedServer === 2) {
+      return (
+        <WebViewPlayer
+          url={dataSource?.nspl.main || ''}
+          fullscreen={videoState.fullscreen}
+          toggleFullscreen2={toggleFullscreen2}
+        />
+      );
+    }
+    return (
       <VideoPlayer
         url={getDefaultUrl?.url}
         isLoading={isLoadingSource}
         handleNextBtn={handleNextBtn}
       />
+    );
+  }, [
+    selectedServer,
+    dataSource,
+    getDefaultUrl,
+    handleNextBtn,
+    isLoadingSource,
+    toggleFullscreen2,
+    videoState.fullscreen,
+  ]);
+
+  return (
+    <View style={styles.container}>
+      {getServerVideo}
+      {/* {selectedServer == 1 ? (
+        <WebViewPlayer
+          url={dataSource?.plyr.main || ''}
+          videoState={videoState}
+          toggleFullscreen2={toggleFullscreen2}
+        />
+      ) : (
+        <VideoPlayer
+          url={getDefaultUrl?.url}
+          isLoading={isLoadingSource}
+          handleNextBtn={handleNextBtn}
+        />
+      )} */}
 
       <ScrollView>
         <WatchInfo
@@ -213,6 +276,38 @@ const Watch: React.FC<WatchScreenProps> = ({navigation, route}) => {
           disablePrevBtn={episodeNum <= 1}
           disableNextBtn={episodeNum >= episodesInfo?.episodes?.length!}
         />
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingVertical: 10,
+            paddingHorizontal: 10,
+          }}>
+          <TouchableOpacity
+            style={[
+              styles.btnContainer,
+              selectedServer === 0 ? styles.activeBtn : undefined,
+            ]}
+            onPress={() => onPressServer(0)}>
+            <Text style={styles.btnText}>Server 1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.btnContainer,
+              selectedServer === 1 ? styles.activeBtn : undefined,
+            ]}
+            onPress={() => onPressServer(1)}>
+            <Text style={styles.btnText}>Server 2</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.btnContainer,
+              selectedServer === 2 ? styles.activeBtn : undefined,
+            ]}
+            onPress={() => onPressServer(2)}>
+            <Text style={styles.btnText}>Server 3</Text>
+          </TouchableOpacity>
+        </View>
+
         <WatchBtnsCards
           list={dataReaction?.reactions?.sort(
             (a: reaction, b: reaction) => a?.order - b?.order,
@@ -256,4 +351,60 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: color.DarkBackGround,
   },
+  btnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 0.3,
+    borderColor: color.LighterGray,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 15,
+    gap: 5,
+    maxHeight: 40,
+    // flex: 1,
+  },
+  activeBtn: {
+    backgroundColor: color.Orange,
+  },
+  btnText: {
+    color: color.White,
+    fontFamily: font.OpenSansMedium,
+    fontSize: 12,
+  },
 });
+
+export const WebViewPlayer = ({
+  url,
+  toggleFullscreen2,
+  fullscreen,
+}: {
+  url: string;
+  toggleFullscreen2: () => void;
+  fullscreen: Boolean;
+}) => {
+  const {width} = Dimensions.get('window');
+
+  return (
+    <View
+      style={{
+        position: 'relative',
+        height: fullscreen ? width : undefined,
+        aspectRatio: fullscreen ? undefined : 16 / 9,
+      }}>
+      <StatusBar hidden={fullscreen ? true : false} />
+      <WebView source={{uri: url || ''}} style={{flex: 1}} />
+      <TouchableOpacity
+        onPress={() => toggleFullscreen2()}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          width: 35,
+          height: 35,
+          backgroundColor: 'rgba(0,0,0,0.3)',
+        }}
+      />
+    </View>
+  );
+};

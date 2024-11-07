@@ -27,14 +27,16 @@ const WatchInfo: React.FC<WatchInfoProps> = ({
           <Skeleton width={'80%'} height={18} opacity={1} />
         </View>
       )}
-      <TouchableOpacity onPress={()=> onPressAnime(anime)}>
-        <View style={styles.infoWrapper}>
+      <View style={styles.infoWrapper}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => onPressAnime(anime)}>
           <Text numberOfLines={2} style={styles.animeTitle}>
             {memoizedTitle(anime)}
           </Text>
-          <Text style={styles.animeEpisodeNum}>Episode {episodeNum}</Text>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+        <Text style={styles.animeEpisodeNum}>Episode {episodeNum}</Text>
+      </View>
     </View>
   );
 };
