@@ -38,6 +38,16 @@ interface chatsParams {
   id: idQuery;
   cursor?: string;
 }
+export const pingServer = async () => {
+  try {
+    const response = await API.get('/ping');
+    return true;
+  } catch (error) {
+    console.error('Error pinging server:', error);
+  } finally {
+    return false;
+  }
+};
 
 export const fetchRecentRelease = async (page: pageQuery = 1) => {
   try {

@@ -19,10 +19,12 @@ import GeneralSetting from '../screens/StackScreens/GeneralSetting';
 import QualitySetting from '../screens/StackScreens/QualitySetting';
 import RequestedInfo from '../screens/StackScreens/anitaku/RequestedInfo';
 import TrailerInfo from '../screens/StackScreens/anitaku/TrailerInfo';
+import ErrorScreen from '../components/ErrorScreen';
 const Stack = createStackNavigator<RootStackParamList>();
 const StackNavigation: React.FC = () => {
-  const {isLoading} = useHomeAnime();
+  const {isLoading, serverReady, retryPing} = useHomeAnime();
   const {setSetting} = useSetting();
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       // console.log('Connection type', state.type);
@@ -41,6 +43,9 @@ const StackNavigation: React.FC = () => {
 
   if (isLoading) {
     return <SplashScreen />;
+  }
+  if (!serverReady) {
+    return <ErrorScreen onRetry={retryPing} />;
   }
   return (
     <NavigationContainer>
